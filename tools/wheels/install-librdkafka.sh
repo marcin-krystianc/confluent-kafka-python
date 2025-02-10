@@ -34,8 +34,6 @@ https://nuget.pkg.github.com/G-Research/download/librdkafka.redist/$VER/librdkaf
 
 #curl -L -o lrk$VER.zip https://www.nuget.org/api/v2/package/librdkafka.redist/$VER
 
-ls -al
-
 unzip lrk$VER.zip
 
 ARCH=${ARCH:-x64}

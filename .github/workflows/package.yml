@@ -4,8 +4,6 @@ name: Build and Package Wheels
 on:
   pull_request:
   push:
-    tags:
-      - '*'
 
 env:
   LIBRDKAFKA_VERSION: v2.6.1-gr
