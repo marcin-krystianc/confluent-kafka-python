@@ -75,7 +75,7 @@ jobs:
           path: artifacts/confluent_kafka-*.whl
 
   publish_pypi_index:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && !github.event.repository.fork
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     name: Build a PyPI-compatible index
     needs: package
     permissions:
