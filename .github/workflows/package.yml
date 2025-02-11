@@ -60,7 +60,6 @@ jobs:
     needs: [build-linux-x64, build-windows]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
@@ -74,3 +73,39 @@ jobs:
         with:
           name: confluent-kafka-python-wheels
           path: artifacts/confluent_kafka-*.whl
+
+  publish_pypi_index:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && !github.event.repository.fork
+    name: Build a PyPI-compatible index
+    needs: package
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: confluent-kafka-python-wheels
+          path: artifacts
+          
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/confluent_kafka*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate Package Index
+        run: |        
+          python -m pip install --upgrade pip
+          pip install PyGithub
+          python .github/scripts/generate_index.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OUTPUT_DIR: dist
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
