@@ -8,6 +8,11 @@ on:
 env:
   LIBRDKAFKA_VERSION: v2.6.1-gr
 
+permissions:
+  actions: read
+  pages: write
+  id-token: write
+
 jobs:
 
   build-linux-x64:
