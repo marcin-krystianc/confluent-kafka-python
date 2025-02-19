@@ -55,7 +55,7 @@ class PackageIndexBuilder:
         # Generate main index
         package_list = self.packages.keys()
         main_index = HTML_TEMPLATE.format(
-            package_name="Simple Package Index",
+            package_name="Simple Package Index 1",
             package_links="\n".join([f'<a href="{x}/">{x}</a><br/>' for x in package_list])
         )
 
