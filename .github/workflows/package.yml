@@ -10,6 +10,7 @@ env:
 
 permissions:
   actions: read
+  packages: read
   pages: write
   id-token: write
 
