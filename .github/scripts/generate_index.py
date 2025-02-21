@@ -71,11 +71,11 @@ class PackageIndexBuilder:
             file_links = []
             assets = sorted(assets, key=lambda x: x["filename"])
             for filename, items in itertools.groupby(assets, key=lambda x: x["filename"]):
-                file_links.append(f'<a href="./{filename}">{filename}</a><br/>')
+                file_links.append(f'<a href="/{filename}">{filename}</a><br/>')
                 url = next(items)['url']
 
                 # Download the file
-                with open(package_dir / filename, 'wb') as f:
+                with open(self.output_dir / filename, 'wb') as f:
                     print (f"Downloading '{filename}' from '{url}'")
                     response = self.session.get(url, stream=True)
                     response.raise_for_status()
