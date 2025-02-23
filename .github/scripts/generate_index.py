@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 from pathlib import Path
 from github import Github
 from typing import List, Dict
@@ -21,7 +22,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 class PackageIndexBuilder:
     def __init__(self, token: str, repo_name: str, output_dir: str):
         self.github = Github(token)
-        self.repo_name = repo_name
+        self.repo = self.github.get_repo(self.repo_name)
         self.output_dir = Path(output_dir)
         self.packages: Dict[str, List[Dict]] = {}
         
@@ -31,16 +32,19 @@ class PackageIndexBuilder:
             "Authorization": f"token {token}",
             "Accept": "application/octet-stream",
         })
+    
+    # https://peps.python.org/pep-0503/#normalized-names
+    def normalize(name):
+        return re.sub(r"[-_.]+", "-", name).lower()
 
     def collect_packages(self):
 
         print ("Query release assets")
-        repo = self.github.get_repo(self.repo_name)
-
-        for release in repo.get_releases():
+        
+        for release in self.repo.get_releases():
             for asset in release.get_assets():
                 if asset.name.endswith(('.whl', '.tar.gz')):
-                    package_name = asset.name.split('-')[0].replace('_', '-')
+                    package_name = self.normalize(asset.name.split('-')[0])
                     if package_name not in self.packages:
                         self.packages[package_name] = []
 
@@ -71,7 +75,7 @@ class PackageIndexBuilder:
             file_links = []
             assets = sorted(assets, key=lambda x: x["filename"])
             for filename, items in itertools.groupby(assets, key=lambda x: x["filename"]):
-                file_links.append(f'<a href="/{filename}">{filename}</a><br/>')
+                file_links.append(f'<a href="/{self.repo.name}/{filename}">{filename}</a><br/>')
                 url = next(items)['url']
 
                 # Download the file
