@@ -22,7 +22,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 class PackageIndexBuilder:
     def __init__(self, token: str, repo_name: str, output_dir: str):
         self.github = Github(token)
-        self.repo = self.github.get_repo(self.repo_name)
+        self.repo = self.github.get_repo(repo_name)
         self.output_dir = Path(output_dir)
         self.packages: Dict[str, List[Dict]] = {}
         
@@ -34,7 +34,7 @@ class PackageIndexBuilder:
         })
     
     # https://peps.python.org/pep-0503/#normalized-names
-    def normalize(name):
+    def normalize(self, name):
         return re.sub(r"[-_.]+", "-", name).lower()
 
     def collect_packages(self):
