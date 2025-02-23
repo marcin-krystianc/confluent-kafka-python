@@ -25,13 +25,10 @@ def normalize(name):
     return re.sub(r"[-_.]+", "-", name).lower()
 
 def calculate_sha256(file_path):
-    """Calculate SHA256 hash of a file."""
-    sha256_hash = hashlib.sha256()
     with open(file_path, "rb") as f:
-        # Read the file in chunks to handle large files efficiently
-        for chunk in iter(lambda: f.read(4096), b""):
-            sha256_hash.update(chunk)
-    return sha256_hash.hexdigest()
+        digest = hashlib.file_digest(f, "sha256")
+
+    return digest.hexdigest()
 
 class PackageIndexBuilder:
     def __init__(self, token: str, repo_name: str, output_dir: str):
