@@ -6,6 +6,7 @@ from github import Github
 from typing import List, Dict
 import itertools
 import requests
+import hashlib
 
 HTML_TEMPLATE = """<!DOCTYPE html>
  <html>
@@ -18,6 +19,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
  </body>
  </html>
 """
+    
+def normalize(name):
+    """Normalize package name according to PEP 503."""
+    return re.sub(r"[-_.]+", "-", name).lower()
+
+def calculate_sha256(file_path):
+    """Calculate SHA256 hash of a file."""
+    sha256_hash = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        # Read the file in chunks to handle large files efficiently
+        for chunk in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(chunk)
+    return sha256_hash.hexdigest()
 
 class PackageIndexBuilder:
     def __init__(self, token: str, repo_name: str, output_dir: str):
@@ -32,10 +46,7 @@ class PackageIndexBuilder:
             "Authorization": f"token {token}",
             "Accept": "application/octet-stream",
         })
-    
-    # https://peps.python.org/pep-0503/#normalized-names
-    def normalize(self, name):
-        return re.sub(r"[-_.]+", "-", name).lower()
+
 
     def collect_packages(self):
 
@@ -44,7 +55,7 @@ class PackageIndexBuilder:
         for release in self.repo.get_releases():
             for asset in release.get_assets():
                 if asset.name.endswith(('.whl', '.tar.gz')):
-                    package_name = self.normalize(asset.name.split('-')[0])
+                    package_name = normalize(asset.name.split('-')[0])
                     if package_name not in self.packages:
                         self.packages[package_name] = []
 
@@ -75,7 +86,6 @@ class PackageIndexBuilder:
             file_links = []
             assets = sorted(assets, key=lambda x: x["filename"])
             for filename, items in itertools.groupby(assets, key=lambda x: x["filename"]):
-                file_links.append(f'<a href="/{self.repo.name}/{filename}">{filename}</a><br/>')
                 url = next(items)['url']
 
                 # Download the file
@@ -86,6 +96,9 @@ class PackageIndexBuilder:
                     for chunk in response.iter_content(chunk_size=8192):
                         if chunk:
                             f.write(chunk)
+
+                sha256_hash = calculate_sha256(self.output_dir / filename)
+                file_links.append(f'<a href="/{self.repo.name}/{filename}#sha256={sha256_hash}">{filename}</a><br/>')
 
             package_index = HTML_TEMPLATE.format(
                 package_name=package,
