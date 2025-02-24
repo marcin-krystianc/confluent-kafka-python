@@ -44,7 +44,6 @@ class PackageIndexBuilder:
             "Accept": "application/octet-stream",
         })
 
-
     def collect_packages(self):
 
         print ("Query release assets")
@@ -86,7 +85,7 @@ class PackageIndexBuilder:
                 url = next(items)['url']
 
                 # Download the file
-                with open(self.output_dir / filename, 'wb') as f:
+                with open(package_dir / filename, 'wb') as f:
                     print (f"Downloading '{filename}' from '{url}'")
                     response = self.session.get(url, stream=True)
                     response.raise_for_status()
@@ -94,8 +93,8 @@ class PackageIndexBuilder:
                         if chunk:
                             f.write(chunk)
 
-                sha256_hash = calculate_sha256(self.output_dir / filename)
-                file_links.append(f'<a href="/{self.repo.name}/{filename}#sha256={sha256_hash}">{filename}</a><br/>')
+                sha256_hash = calculate_sha256(package_dir / filename)
+                file_links.append(f'<a href="{filename}#sha256={sha256_hash}">{filename}</a><br/>')
 
             package_index = HTML_TEMPLATE.format(
                 package_name=package,
