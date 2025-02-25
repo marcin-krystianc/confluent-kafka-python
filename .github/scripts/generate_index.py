@@ -97,7 +97,7 @@ class PackageIndexBuilder:
                 file_links.append(f'<a href="{filename}#sha256={sha256_hash}">{filename}</a><br/>')
 
             package_index = HTML_TEMPLATE.format(
-                package_name=package,
+                package_name=f"Links for {package}",
                 package_links="\n".join(file_links)
             )
 
