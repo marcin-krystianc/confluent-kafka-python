@@ -1,11 +1,11 @@
 import os
 import sys
 import re
-import html
 import itertools
 import requests
 import hashlib
 
+from urllib.parse import quote
 from pathlib import Path
 from github import Github
 from typing import List, Dict
@@ -29,7 +29,7 @@ def normalize(name):
 def calculate_sha256(file_path):
     with open(file_path, "rb") as f:
         digest = hashlib.file_digest(f, "sha256")
-
+    
     return digest.hexdigest()
 
 class PackageIndexBuilder:
@@ -96,7 +96,7 @@ class PackageIndexBuilder:
                             f.write(chunk)
 
                 sha256_hash = calculate_sha256(package_dir / filename)
-                file_links.append(f'<a href="{html.escape(filename)}#sha256={sha256_hash}">{filename}</a><br/>')
+                file_links.append(f'<a href="{quote(filename)}#sha256={sha256_hash}">{filename}</a><br/>')
 
             package_index = HTML_TEMPLATE.format(
                 package_name=f"Links for {package}",
