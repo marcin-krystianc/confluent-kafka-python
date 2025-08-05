@@ -57,5 +57,5 @@ jobs:
     name: Create release artifacts
     needs: [build-linux-x64, build-windows]
     runs-on: ubuntu-latest
-    steps:
-      uses: actions/checkout@v4
+    steps:    
+      - uses: actions/checkout@v2
