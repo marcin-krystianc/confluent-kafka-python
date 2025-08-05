@@ -2,6 +2,7 @@ name: Publish a PyPi-compatible Index
 
 on:
   workflow_call:
+  push:
 
 jobs:
   publish_pypi_index:
