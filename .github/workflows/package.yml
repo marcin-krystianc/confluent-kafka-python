@@ -52,7 +52,6 @@ jobs:
           name: wheels-${{ env.OS_NAME }}-${{ env.ARCH }}
           path: wheelhouse/confluent_kafka*.whl
 
-
   create_release_artifacts:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     name: Create release artifacts
