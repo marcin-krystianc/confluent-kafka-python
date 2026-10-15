@@ -20,7 +20,13 @@ jobs:
   deploy_test_page:
     name: Build&deploy a test page
     runs-on: ubuntu-latest
+#    permissions:
+#      pages: write
+#      id-token: write
     permissions:
+      contents: write
+      actions: read
+      packages: read
       pages: write
       id-token: write
     steps:
