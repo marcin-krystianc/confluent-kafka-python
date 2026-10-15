@@ -43,11 +43,6 @@ jobs:
             echo '<body>'
             echo '<h1>Pages deploy test</h1>'
             echo '<pre>'
-            echo "page_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            echo "label:            ${LABEL}"
-            echo "run_attempt_url:  ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}"
-            echo
-            env | grep '^GITHUB_' | sort
             echo '</pre>'
             echo '</body>'
             echo '</html>'
